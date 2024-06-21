@@ -20,8 +20,8 @@ This repository contains code to deploy trained models using Django for product 
 1. **Clone the Repository**: `git clone <repository-url>`
 2. **Navigate to Project Directory**: `cd project-directory`
 3. `python manage.py collectstatic`
-4. `django compose build`
-5.  `django compose up`
+4. `docker compose build`
+5.  `docker compose up`
 6. **Go to localhost:8000 on your browser.**
 
 ## Product Structure
