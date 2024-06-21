@@ -1,0 +1,59 @@
+./
+├── app
+│   ├── asgi.py
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-310.pyc
+│   │   ├── settings.cpython-310.pyc
+│   │   ├── urls.cpython-310.pyc
+│   │   └── wsgi.cpython-310.pyc
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── db.sqlite3
+├── docker-compose.yml
+├── dockerfile
+├── manage.py
+├── model_deployment
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       └── __init__.cpython-310.pyc
+│   ├── models.py
+│   ├── __pycache__
+│   │   ├── admin.cpython-310.pyc
+│   │   ├── apps.cpython-310.pyc
+│   │   ├── __init__.cpython-310.pyc
+│   │   ├── models.cpython-310.pyc
+│   │   ├── urls.cpython-310.pyc
+│   │   └── views.cpython-310.pyc
+│   ├── templates
+│   │   └── index.html
+│   ├── tests.py
+│   ├── urls.py
+│   ├── utils
+│   │   ├── helper_function.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       ├── helper_function.cpython-310.pyc
+│   │       └── __init__.cpython-310.pyc
+│   └── views.py
+├── model_files
+│   ├── class_names.pkl
+│   ├── cluster_label_mapping.json
+│   ├── count_vectorizer.pkl
+│   ├── lr.pkl
+│   ├── lstm.tar
+│   ├── nb.pkl
+│   ├── __pycache__
+│   ├── svm.pkl
+│   ├── word2idx.json
+│   └── xgb.pkl
+├── README.md
+├── requirements.txt
+└── result.txt
+
+11 directories, 45 files

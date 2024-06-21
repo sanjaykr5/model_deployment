@@ -1,0 +1,236 @@
+{% load static %}
+<!-- myapp/templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Deployment</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header-banner {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            margin-top: 100px; /* Adding space for the fixed header */
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .output-group {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+
+        .output-group .form-group {
+            margin-bottom: 15px;
+        }
+
+        .output-group .form-group label {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .output-group .form-group input {
+            background-color: #e9ecef;
+            color: #495057;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .loader-overlay {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.7); /* Translucent white background */
+        }
+
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .loader .spinner-border {
+            width: 5rem;
+            height: 5rem;
+        }
+    </style>
+</head>
+<body>
+<div class="header-banner">
+    <h1>Model Deployment</h1>
+</div>
+<div class="loader-overlay" id="loaderOverlay">
+    <div class="loader">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <p>Loading...</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <form id="inputForm">
+                <div class="form-group">
+                    <label for="input3">Product Title:</label>
+                    <input type="text" class="form-control" id="input3" name="product_title">
+                </div>
+                <div class="form-group">
+                    <label for="productClassificationModel">Product Classification Model:</label>
+                    <select class="form-control" id="productClassificationModel"
+                            name="productClassificationModel">
+                        <option value="classification_model1">Linear Regression</option>
+                        <option value="classification_model2">SVM with Linear Kernal</option>
+                        <option value="classification_model3">Multinomial Naive Bayes Regression</option>
+                        <option value="classification_model4">Xgboost</option>
+                        <option value="classification_model5">LSTM</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productClusteringModel">Product Clustering Model:</label>
+                    <select class="form-control" id="productClusteringModel" name="productClusteringModel">
+                        <option value="clustering_model_1">Tokenized String Matching</option>
+                        <option value="clustering_model_2">String Cosine Similarity</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" id="submitButton">Submit</button>
+            </form>
+            <div class="output-group">
+                <div class="form-group">
+                    <label for="output1">Product Title</label>
+                    <input type="text" class="form-control" id="output1" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="output2">Predicted Category</label>
+                    <input type="text" class="form-control" id="output2" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="output3">Predicted Cluster Label</label>
+                    <input type="text" class="form-control" id="output3" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script> function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    // Event listener for main form submission
+    var inputForm = document.getElementById('inputForm');
+    var loaderOverlay = document.getElementById('loaderOverlay');
+    if (inputForm) {
+        inputForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            var formData = new FormData(inputForm);
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/submit_form', true);  // Adjust URL as per your Django view
+            xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+            loaderOverlay.style.display = 'block';
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    loaderOverlay.style.display = 'none';
+                    var response = JSON.parse(xhr.responseText);
+                    document.getElementById('output1').value = response['product_title'];
+                    document.getElementById('output2').value = response['class_pred'];
+                    document.getElementById('output3').value = response['clus_pred'];
+                } else {
+                    console.error('Request failed with status:', xhr.status, xhr.statusText);
+                }
+            };
+
+            xhr.onerror = function () {
+                console.error('Request failed');
+            };
+
+            xhr.send(formData);
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    var classificationModelDropdown = document.getElementById('productClassificationModel');
+    var clusteringModelDropdown = document.getElementById('productClusteringModel');
+    classificationModelDropdown.addEventListener('change', handleDropdownChange);
+    clusteringModelDropdown.addEventListener('change', handleDropdownChange);
+
+    function handleDropdownChange(event) {
+        let json_data = JSON.stringify({
+            'classification_model': classificationModelDropdown.selectedIndex,
+            'clustering_model': clusteringModelDropdown.selectedIndex
+        });
+        console.log(json_data)
+        fetch('/model_selection', {
+            method: 'POST',
+            body: json_data,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        }).then({});
+    }
+});
+</script>
+
+</body>
+</html>
